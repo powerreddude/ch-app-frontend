@@ -16,12 +16,22 @@ import Loading from './pages/Loading';
 import getMe from './api/users/getMe';
 import postLogin from './api/auth/postLogin';
 import postSignup from './api/auth/postSignup';
+import getServers from './api/servers/getServers';
 
 
 function App() {
   const [user, setUser] = useState(null);
-  const [servers, setServer] = useState([]);
+  const [servers, setServers] = useState([]);
   const [loaded, setLoaded] = useState(false);
+
+  const authed = () => {
+    getServers().then(servers => {
+      if(servers) {
+        setServers(servers);
+        console.log(servers)
+      }
+    })
+  }
 
   useEffect( () => {
     getMe().then(user => {
@@ -29,15 +39,13 @@ function App() {
         setUser(user);
       }
       setLoaded(true);
+
+      authed();
     })
   }, [])
 
   if(!loaded) {
     return (<Loading/>)
-  }
-
-  const authed = () => {
-
   }
 
   const onLogin = async (e) => {
@@ -90,7 +98,7 @@ function App() {
             />
             
           
-          <Route element={<NavRoute/>} >
+          <Route element={<NavRoute user={user} />} >
             {/* routes with nav here */}
 
             <Route
@@ -102,7 +110,7 @@ function App() {
               
               <Route 
                 path='/s' 
-                element={<Servers/>}
+                element={<Servers servers={servers}/>}
                 />
 
               {
