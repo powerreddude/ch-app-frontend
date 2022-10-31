@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { io } from "socket.io-client";
 
 import './App.css';
 
@@ -23,14 +24,20 @@ function App() {
   const [user, setUser] = useState(null);
   const [servers, setServers] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [socket, setSocket] = useState(null);
 
   const authed = () => {
     getServers().then(servers => {
       if(servers) {
         setServers(servers);
-        console.log(servers)
       }
     })
+
+    const socket = io();
+
+    setSocket(socket)
+
+
   }
 
   useEffect( () => {
@@ -119,7 +126,7 @@ function App() {
                     <Route 
                       key={server.id}
                       path={`/s/${server.id}`}
-                      element={<Server/>}
+                      element={<Server server={server} socket={socket}/>}
                       />
                   )
                 })
@@ -128,6 +135,8 @@ function App() {
             </Route>
 
           </Route>
+
+          <Route path='*' element={<Navigate to='/' replace/>}/>
 
         </Routes>
 
