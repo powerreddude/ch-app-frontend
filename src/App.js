@@ -163,7 +163,7 @@ function App() {
                     <Route 
                       key={server.id}
                       path={`/s/${server.id}`}
-                      element={<Server server={server} socket={socket}/>}
+                      element={<Server server={server} user={user} socket={socket}/>}
                       />
                   )
                 })

@@ -28,7 +28,7 @@ export default function SideBar({ children, stickyBottom, left }) {
         <div className="grow">
           {children}
         </div>
-        <div className="flex mb-2 mx-1 px-1 h-8 items-center rounded-md drop-shadow-xl bg-zinc-700">
+        <div className="flex mb-2 mx-1 h-8">
           {stickyBottom}
         </div>
       </div>

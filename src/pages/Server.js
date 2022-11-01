@@ -7,7 +7,7 @@ import Loading from "./Loading";
 import { Link } from "react-router-dom";
 import getInvite from "../api/servers/getInvite";
 
-export default function Server({ server, socket }) {
+export default function Server({ server, user, socket }) {
   const [channels, setChannels] = useState([]);
   const [members, setMembers] = useState([]);
   const [activeChannel, setActiveChannel] = useState(null);
@@ -33,9 +33,9 @@ export default function Server({ server, socket }) {
   return (
     <div className="flex h-full w-full">
       <SideBar left stickyBottom={
-        <div className="flex overflow-hidden justify-between w-full">
+        <div className="flex overflow-hidden justify-between w-full items-center rounded-md drop-shadow-xl bg-zinc-700 px-1">
           <abbr title={server.name} className="font-bold border-b-0 no-underline text-ellipsis overflow-hidden">{server.name}</abbr>
-          
+          {server.ownerId === user.id ? // Check if user is able to edit server aka owner
           <div className="flex">
             <div className="cursor-pointer" onClick={createInvite}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -50,7 +50,7 @@ export default function Server({ server, socket }) {
               </svg>
             </Link>
           </div>
-
+          :null}
         </div>
       }>
         {channels.map(channel => {
