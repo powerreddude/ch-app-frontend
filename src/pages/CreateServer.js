@@ -1,49 +1,42 @@
-export default function CreateServer({  }) {
+import { useEffect, useState } from "react";
+import { Link, Navigate } from "react-router-dom";
+
+export default function CreateServer({ onSubmit, servers }) {
+  const [created, setCreated] = useState(false);
+
+  if(created) {return (<Navigate to={`/s`} replace/>)}
+
   return (
     <div className="flex flex-col justify-center h-full w-full">
     <div className='flex flex-col p-4 mx-auto rounded-md bg-zinc-700 shadow-lg'>
-      <form onSubmit={onSubmit} className='text-zinc-900 flex flex-col space-y-4'>
+      <form onSubmit={ (e) => {
+        setCreated(onSubmit(e));
+        }} className='text-zinc-900 flex flex-col space-y-4'>
         <div className="flex justify-center">
           <Link to='/'>
-            <img className="w-14 h-14" src="logo.svg" alt="Logo"/>
+            <img className="w-14 h-14" src="/logo.svg" alt="Logo"/>
           </Link>
         </div>
-        <h3 className="font-bold text-2xl text-zinc-300">Login</h3>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          className="appearance-none focus:outline-none p-1 rounded-md"
-          placeholder="Email"
-        />
-        <input
-          id="password"
-          name="password"
-          type="password"
-          required
-          className="appearance-none focus:outline-none p-1 rounded-md"
-          placeholder="Password"
-        />
+        <h3 className="font-bold text-2xl text-zinc-300">Create Server</h3>
         <input
           id="name"
           name="name"
           type="text"
+          autoComplete="off"
           required
           className="appearance-none focus:outline-none p-1 rounded-md"
-          placeholder="Name"
+          placeholder="Server Name"
         />
         <input
-          id="key"
-          name="key"
+          id="channelName"
+          name="channelName"
           type="text"
           required
           className="appearance-none focus:outline-none p-1 rounded-md"
-          placeholder="Alpha Key"
+          placeholder="Channel Name"
         />
 
-        <button type="submit" className="bg-violet-500 rounded-md hover:bg-violet-600">Submit</button>
+        <button type="submit" className="bg-violet-500 rounded-md hover:bg-violet-600">Create</button>
       </form>
     </div>
   </div>

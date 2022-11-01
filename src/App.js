@@ -13,11 +13,15 @@ import Servers from './pages/Servers';
 import Server from './pages/Server';
 import Home from './pages/Home';
 import Loading from './pages/Loading';
+import CreateServer from './pages/CreateServer';
 
 import getMe from './api/users/getMe';
 import postLogin from './api/auth/postLogin';
 import postSignup from './api/auth/postSignup';
 import getServers from './api/servers/getServers';
+import postServer from './api/servers/postServer';
+import JoinServer from './pages/JoinServer';
+import postJoin from './api/servers/postJoin';
 
 
 function App() {
@@ -87,6 +91,29 @@ function App() {
     return true;
   }
 
+  const onCreateNew = async (e) => {
+    e.preventDefault();
+    const channelName = e.target.channelName.value, name = e.target.name.value;
+
+    const server = await postServer({ name, channelName });
+
+    console.log(server);
+
+    setServers((servers) => [...servers, server])
+
+    return server;
+  }
+
+  const onJoinServer = async (key) => {
+    const server = await postJoin({ key });
+
+    console.log(server)
+
+    setServers((servers) => [...servers, server])
+
+    return server;
+  }
+
   return (
     <div className="App w-full h-full">
       <BrowserRouter>
@@ -118,6 +145,16 @@ function App() {
               <Route 
                 path='/s' 
                 element={<Servers servers={servers}/>}
+                />
+
+              <Route
+                path='/s/create'
+                element={<CreateServer onSubmit={onCreateNew} servers={servers}/>}
+                />
+              
+              <Route
+                path='/s/join/:key'
+                element={<JoinServer onSubmit={onJoinServer}/>}
                 />
 
               {

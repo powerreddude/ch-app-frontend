@@ -17,9 +17,9 @@ export default function Channel({ channel, socket }) {
     socket.on(`channel-${channel.id}`, (msg) => {
       const parsed = JSON.parse(msg);
 
-      setMessages((messages) => parsed.id > messages[0].id ? [parsed, ...messages] : messages)
+      setMessages((messages) => !messages[0] || parsed.id > messages[0].id ? [parsed, ...messages] : messages)
     })
-  }, [channel, socket]);
+  }, [channel]);
   
   const fetchMoreMessages = () => {
     getMessages({ channelId: channel.id, offset: messages.length + 1, limit: 10 }).then(newMessages => {

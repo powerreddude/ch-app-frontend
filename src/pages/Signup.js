@@ -14,7 +14,7 @@ export default function Signup({ authed, onSubmit }) {
               <img className="w-14 h-14" src="logo.svg" alt="Logo"/>
             </Link>
           </div>
-          <h3 className="font-bold text-2xl text-zinc-300">Login</h3>
+          <h3 className="font-bold text-2xl text-zinc-300">Signup</h3>
           <input
             id="email"
             name="email"
