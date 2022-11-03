@@ -6,12 +6,15 @@ import SideBar from "../components/SideBar";
 import Loading from "./Loading";
 import { Link } from "react-router-dom";
 import getInvite from "../api/servers/getInvite";
+import Modal from "../components/Modal";
+import postChannel from "../api/channels/postChannel";
 
 export default function Server({ server, user, socket }) {
   const [channels, setChannels] = useState([]);
   const [members, setMembers] = useState([]);
   const [activeChannel, setActiveChannel] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [openCreateChannel, setOpenCreateChannel] = useState(false);
 
   useEffect(() => {
     Promise.all([getChannels({ serverId: server.id }), getMembers({ serverId: server.id })]).then((res) => {
@@ -28,6 +31,17 @@ export default function Server({ server, user, socket }) {
     })
   }
 
+  const createChannel = (e) => {
+    e.preventDefault();
+    const name = e.target.name.value, serverId = server.id;
+    
+    postChannel({ name: name, serverId: serverId }).then((channel) => {
+      setChannels(channels => [...channels, channel])
+    })
+
+    
+  }
+
   if(!loaded) {return (<Loading></Loading>)}
 
   return (
@@ -35,8 +49,15 @@ export default function Server({ server, user, socket }) {
       <SideBar left stickyBottom={
         <div className="flex overflow-hidden justify-between w-full items-center rounded-md drop-shadow-xl bg-zinc-700 px-1">
           <abbr title={server.name} className="font-bold border-b-0 no-underline text-ellipsis overflow-hidden">{server.name}</abbr>
+          {/* owner controls */}
           {server.ownerId === user.id ? // Check if user is able to edit server aka owner
           <div className="flex">
+            <div className="cursor-pointer" onClick={() => {setOpenCreateChannel(true)}}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </div>
+
             <div className="cursor-pointer" onClick={createInvite}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
@@ -55,7 +76,12 @@ export default function Server({ server, user, socket }) {
       }>
         {channels.map(channel => {
           return (
-            <div key={channel.id} className={`${channel.id === activeChannel.id ? "drop-shadow-md text-zinc-50 bg-zinc-700" : "text-zinc-400"} text-ellipsis overflow-hidden m-1 px-1 rounded-xl cursor-pointer`} onClick={() => {setActiveChannel(channel); console.log(channel)}}>
+            <div key={channel.id} className={`${channel.id === activeChannel.id ? "drop-shadow-md text-zinc-50 bg-zinc-700" : "text-zinc-400"} text-ellipsis overflow-hidden m-1 px-1 rounded-xl cursor-pointer`} onClick={() => {
+              if(channel.id !== activeChannel.id) {
+                socket.off(`channel-${activeChannel.id}`); //stop listening to the previous channels messages
+                setActiveChannel(channel)
+                }
+                }}>
               <abbr title={channel.name} className="border-b-0 no-underline">{channel.name}</abbr>
             </div>
           )
@@ -65,6 +91,34 @@ export default function Server({ server, user, socket }) {
       <SideBar>
         
       </SideBar>
+
+      {/* modal for creating channel */}
+      <Modal open={openCreateChannel}>
+        <form onSubmit={createChannel} className='text-zinc-900 flex flex-col space-y-4'>
+          <div className="flex justify-start" onClick={() => {setOpenCreateChannel(false)}}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <div className="flex justify-center">
+            <Link to='/'>
+              <img className="w-14 h-14" src="/logo.svg" alt="Logo"/>
+            </Link>
+          </div>
+          <h3 className="font-bold text-2xl text-zinc-300">Create Channel</h3>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            autoComplete="off"
+            required
+            className="appearance-none focus:outline-none p-1 rounded-md"
+            placeholder="Channel Name"
+          />
+
+          <button type="submit" className="bg-violet-500 rounded-md hover:bg-violet-600">Create</button>
+        </form>
+      </Modal>
     </div>
   )
 }

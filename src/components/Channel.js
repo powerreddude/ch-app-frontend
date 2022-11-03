@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MessageBar from "./MessageBar";
 import Message from "./Message";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -7,6 +7,7 @@ import postMessage from "../api/messages/postMessage";
 
 export default function Channel({ channel, socket }) {
   const [messages, setMessages] = useState([]);
+  const prevChannel = useRef();
   //const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -14,11 +15,18 @@ export default function Channel({ channel, socket }) {
       setMessages(messages);
     })
 
-    socket.on(`channel-${channel.id}`, (msg) => {
-      const parsed = JSON.parse(msg);
+    if(prevChannel.current) {
+      //unfollow events
+      socket.off(`channel-${prevChannel.current.id}`);
 
-      setMessages((messages) => !messages[0] || parsed.id > messages[0].id ? [parsed, ...messages] : messages)
-    })
+      socket.on(`channel-${channel.id}`, (msg) => {
+        const parsed = JSON.parse(msg);
+        console.log(parsed)
+        setMessages((messages) => !messages[0] || parsed.id > messages[0].id ? [parsed, ...messages] : messages)
+      })
+    }
+
+    prevChannel.current = channel;
   }, [channel]);
   
   const fetchMoreMessages = () => {
