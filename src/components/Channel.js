@@ -15,16 +15,16 @@ export default function Channel({ channel, socket }) {
       setMessages(messages);
     })
 
+    //unfollow events
     if(prevChannel.current) {
-      //unfollow events
       socket.off(`channel-${prevChannel.current.id}`);
-
-      socket.on(`channel-${channel.id}`, (msg) => {
-        const parsed = JSON.parse(msg);
-        console.log(parsed)
-        setMessages((messages) => !messages[0] || parsed.id > messages[0].id ? [parsed, ...messages] : messages)
-      })
     }
+
+    socket.on(`channel-${channel.id}`, (msg) => {
+      const parsed = JSON.parse(msg);
+      setMessages((messages) => !messages[0] || parsed.id > messages[0].id ? [parsed, ...messages] : messages)
+    })
+    
 
     prevChannel.current = channel;
   }, [channel]);

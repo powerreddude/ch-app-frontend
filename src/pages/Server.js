@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import getChannels from "../api/channels/getChannels";
 import getMembers from "../api/servers/getMembers";
 import Channel from "../components/Channel";
@@ -15,6 +15,7 @@ export default function Server({ server, user, socket }) {
   const [activeChannel, setActiveChannel] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [openCreateChannel, setOpenCreateChannel] = useState(false);
+  const prevServer = useRef();
 
   useEffect(() => {
     Promise.all([getChannels({ serverId: server.id }), getMembers({ serverId: server.id })]).then((res) => {
@@ -23,8 +24,21 @@ export default function Server({ server, user, socket }) {
       setMembers(res[1]);
       setLoaded(true);
     })
+
+    if(prevServer.current) {
+      socket.off(`server-${prevServer}-channel-create`);
+    }
+
+    socket.on(`server-${server.id}-channel-create`, (msg) => {
+      const parsed = JSON.parse(msg);
+
+      setChannels(channels => !channels.find(channel => channel.id === parsed.id) ? [...channels, parsed] : channels)
+    })
+
+    prevServer.current = server.id
   }, [server])
 
+  
   const createInvite = () => {
     getInvite({ serverId: server.id }).then((invite) => {
       navigator.clipboard.writeText(`${window.location.origin}/s/join/${invite.key}`)
@@ -36,7 +50,6 @@ export default function Server({ server, user, socket }) {
     const name = e.target.name.value, serverId = server.id;
     
     postChannel({ name: name, serverId: serverId }).then((channel) => {
-      setChannels(channels => [...channels, channel])
     })
 
     
@@ -76,12 +89,7 @@ export default function Server({ server, user, socket }) {
       }>
         {channels.map(channel => {
           return (
-            <div key={channel.id} className={`${channel.id === activeChannel.id ? "drop-shadow-md text-zinc-50 bg-zinc-700" : "text-zinc-400"} text-ellipsis overflow-hidden m-1 px-1 rounded-xl cursor-pointer`} onClick={() => {
-              if(channel.id !== activeChannel.id) {
-                socket.off(`channel-${activeChannel.id}`); //stop listening to the previous channels messages
-                setActiveChannel(channel)
-                }
-                }}>
+            <div key={channel.id} className={`${channel.id === activeChannel.id ? "drop-shadow-md text-zinc-50 bg-zinc-700" : "text-zinc-400"} text-ellipsis overflow-hidden m-1 px-1 rounded-xl cursor-pointer`} onClick={() => {setActiveChannel(channel)}}>
               <abbr title={channel.name} className="border-b-0 no-underline">{channel.name}</abbr>
             </div>
           )
