@@ -65,7 +65,6 @@ export default function Channel({ channel, socket }) {
           >
             {
               messages.map((message, index, array) => {
-                if(message.user.id === array[index - 1]) {}
                 return (
                   <Message key={message.id} message={message}></Message>
                 )

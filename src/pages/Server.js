@@ -38,7 +38,7 @@ export default function Server({ server, user, socket }) {
     prevServer.current = server.id
   }, [server])
 
-  
+
   const createInvite = () => {
     getInvite({ serverId: server.id }).then((invite) => {
       navigator.clipboard.writeText(`${window.location.origin}/s/join/${invite.key}`)
@@ -50,6 +50,7 @@ export default function Server({ server, user, socket }) {
     const name = e.target.name.value, serverId = server.id;
     
     postChannel({ name: name, serverId: serverId }).then((channel) => {
+      setOpenCreateChannel(false);
     })
 
     

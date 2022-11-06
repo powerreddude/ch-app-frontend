@@ -32,7 +32,7 @@ export default function Nav({ user }) {
           {!user ?
           <div className={`hidden md:flex space-x-4 items-center ${user ? 'md:hidden' : ''}`}>
             <Link className='px-2 pt-1.5 pb-2.5 border-2 border-violet-800 hover:border-violet-900 rounded-md' to='/login'>Login</Link>
-            <Link className='px-2 pt-1.5 pb-2.5 border-2 border-violet-800 bg-violet-800 rounded-md hover:bg-violet-900' to='/signup'>Signup</Link>
+            <Link className='px-2 pt-1.5 pb-2.5 border-2 border-violet-800 bg-violet-800 rounded-md hover:bg-violet-900 hover:border-violet-800' to='/signup'>Signup</Link>
           </div>
           :
           <div className="">

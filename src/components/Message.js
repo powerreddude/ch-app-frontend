@@ -6,7 +6,7 @@ export default function Message({ message }) {
       </div>
       <div className="flex flex-col text-zinc-50 min-w-0 text-left">
         <div className="font-bold text-left">
-          {message.user.name}
+          {message.user ? message.user.name : 'Unknown User'}
         </div>
         <div className="break-words px-4">
           {message.content}

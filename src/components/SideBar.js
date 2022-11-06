@@ -25,7 +25,7 @@ export default function SideBar({ children, stickyBottom, left }) {
 
       </div>
       <div className={`flex flex-col shrink-0 whitespace-nowrap h-full transition-all overflow-x-hidden overflow-y-scroll scrollbar-hide ${open ? 'w-80' : 'w-0'}`}>
-        <div className="grow overflow-y-scroll">
+        <div className="grow overflow-y-scroll scrollbar-hide">
           {children}
         </div>
         <div className="flex mb-2 mx-1 h-8">
