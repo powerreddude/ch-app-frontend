@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
 
 
-export default function ProtectedRoute({ user, redirectPath, children }) {
+export default function ProtectedRoute({ authed, redirectPath, children }) {
 
-  if (!user) {
+  if (!authed) {
     return <Navigate to={redirectPath} replace />;
   }
 

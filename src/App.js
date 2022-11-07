@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate, unstable_HistoryRouter } from 'react-router-dom';
 import { io } from "socket.io-client";
 
 import './App.css';
@@ -22,38 +22,73 @@ import getServers from './api/servers/getServers';
 import postServer from './api/servers/postServer';
 import JoinServer from './pages/JoinServer';
 import postJoin from './api/servers/postJoin';
+import getFriendships from './api/friendships/getFriendships';
+import getChannel from './api/channels/getChannel';
+import Info from './pages/Info';
 
 
 function App() {
   const [user, setUser] = useState(null);
   const [servers, setServers] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [loadedAuthed, setLoadedAuthed] = useState(false);
+  const [needsAuth, setNeedsAuth] = useState(false)
+  const [loadedFriendships, setLoadedFriendships] = useState(false);
+  const [loadedServers, setLoadedServers] = useState(false);
   const [socket, setSocket] = useState(null);
+  const [channels, setChannels] = useState([])
+  const [friendships, setFriendships] = useState([]);
 
   const authed = () => {
     getServers().then(servers => {
       if(servers) {
         setServers(servers);
+        setLoadedServers(true);
       }
+    })
+
+    getFriendships().then(friendships => {
+      setFriendships(friendships);
+      friendships.map(async (user) => {
+        const channel = await getChannel({ channelId: user.friendships.channelId });
+        channel.name = user.name;
+        setChannels(channels => !channels.find(channels => channels.id === channel.id) ? [...channels, channel] : channels);
+      })
+      setLoadedFriendships(true);
     })
 
     const socket = io();
 
     setSocket(socket)
 
-
+    setLoadedAuthed(true);
   }
 
   useEffect( () => {
     getMe().then(user => {
       if(user) {
         setUser(user);
-      }
-      setLoaded(true);
 
-      authed();
+        authed();
+      } else {
+        setNeedsAuth(true);
+      }
+
+      setLoaded(true);
     })
   }, [])
+
+  useEffect( () => {
+    if(socket && user) {
+      socket.on(`user-${user.id}-friendships-channel-create`, (msg) => {
+        const parsed = JSON.parse(msg);
+
+        console.log(parsed)
+
+        setChannels(channels => !channels.find(channels => channels.id === parsed.id) ? [...channels, parsed] : channels);
+      })
+    }
+  }, [socket, user])
 
   if(!loaded) {
     return (<Loading/>)
@@ -136,12 +171,17 @@ function App() {
             {/* routes with nav here */}
 
             <Route
-                path='/'
-                element={<Home/>}
+                path='/info'
+                element={<Info/>}
                 />
 
-            <Route element={<ProtectedRoute user={user} redirectPath='/login'/>}>
+            <Route element={<ProtectedRoute authed={loadedAuthed} redirectPath='/info'/>}>
               
+              <Route
+                path='/'
+                element={loadedFriendships ? <Home socket={socket} friendships={friendships} channels={channels} /> : <Loading/>}
+                />
+
               <Route 
                 path='/s' 
                 element={<Servers servers={servers}/>}
@@ -173,7 +213,7 @@ function App() {
 
           </Route>
 
-          <Route path='*' element={<Navigate to='/' replace/>}/>
+          <Route path='*' element={<Navigate to='/info' replace/>}/>
 
         </Routes>
 
