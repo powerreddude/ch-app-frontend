@@ -4,14 +4,17 @@ import Message from "./Message";
 import InfiniteScroll from "react-infinite-scroll-component";
 import getMessages from "../api/messages/getMessages";
 import postMessage from "../api/messages/postMessage";
+import Loading from "../pages/Loading";
 
 export default function Channel({ channel, socket }) {
   const [messages, setMessages] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
   const prevChannel = useRef();
-  //const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    getMessages({ channelId: channel.id }).then(messages => {
+    getMessages({ channelId: channel.id, limit: 30 }).then(messages => {
+      if(messages.length < 30) {setHasMore(false)}
+      console.log(messages)
       setMessages(messages);
     })
 
@@ -52,14 +55,13 @@ export default function Channel({ channel, socket }) {
     <div className="grow h-full bg-zinc-700 flex flex-col min-w-0">
       <div className="flex flex-col overflow-auto grow">
         <div id={`channel-${channel.id}-scroller`} className="messages overflow-auto flex flex-col-reverse grow">
-            
           <InfiniteScroll
             dataLength={messages.length}
             inverse={true}
             next={fetchMoreMessages}
             scrollThreshold={0.8}
-            hasMore={true}
-            loader={<h4>Loading...</h4>}
+            hasMore={hasMore}
+            loader={<div className="h-16 my-8"><Loading></Loading></div>}
             scrollableTarget={`channel-${channel.id}-scroller`}
             style={{ display: 'flex', flexDirection: 'column-reverse' }}
           >

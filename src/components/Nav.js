@@ -47,11 +47,16 @@ export default function Nav({ user }) {
         </div>
       </div>
       {/* make this flex and justify between */}
-      <div className={`absolute z-10 w-full bg-zinc-900 transition-height md:hidden overflow-hidden flex flex-col justify-between ${showMobile ? 'h-44' : 'h-0'}`}>
+      <div className={`absolute z-10 w-full bg-zinc-900 transition-all md:hidden overflow-hidden flex flex-col justify-between ${showMobile ? ' max-h-64' : 'max-h-0'}`}>
         <Link className="block py-2 border-t border-zinc-800 grow" to="/">Home</Link>
         <Link className="block py-2 border-t border-zinc-800 grow" to="/s">Servers</Link>
-        <Link className="block py-2 border-t border-zinc-800 grow" to="/login">Login</Link>
-        <Link className="block py-2 border-t border-zinc-800 grow" to="/signup">Signup</Link>
+        {!user ?
+        <>
+        <Link className='m-1 px-2 pt-1.5 pb-2.5 border-2 border-violet-800 hover:border-violet-900 rounded-md' to='/login'>Login</Link>
+        <Link className='m-1 px-2 pt-1.5 pb-2.5 border-2 border-violet-800 bg-violet-800 rounded-md hover:bg-violet-900 hover:border-violet-800' to='/signup'>Signup</Link>
+        </>
+        : null
+        }
       </div>
     </nav>
   )

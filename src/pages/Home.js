@@ -6,14 +6,34 @@ import SideBar from '../components/SideBar';
 import Loading from './Loading';
 import { Link } from 'react-router-dom';
 import getUsername from '../api/users/getUsername';
+import getChannels from '../api/friendships/getChannels';
+import getFriendships from '../api/friendships/getFriendships';
 
-export default function Home({ socket, friendships, channels }) {
+export default function Home({ socket }) {
   const [activeChannel, setActiveChannel] = useState(null);
-  const [loaded, setLoaded] = useState(true);
+  const [channels, setChannels] = useState([]);
+  const [friendships, setFriendships] = useState([]);
+  const [loaded, setLoaded] = useState(false);
   const [openAddFriendModal, setOpenAddFriendModal] = useState(false);
 
   useEffect(() => {
+    getChannels().then(channels => {
+      setChannels(channels);
+      setLoaded(true);
+    })
 
+    getFriendships().then(friendships => {
+      setFriendships(friendships);
+      setLoaded(true)
+    })
+
+    socket.on(`user-friendships-channel-create`, (msg) => {
+      const parsed = JSON.parse(msg);
+
+      console.log(parsed)
+
+      setChannels(channels => !channels.find(channels => channels.id === parsed.id) ? [...channels, parsed] : channels);
+    })
   }, [])
 
   const onAddFriend = async (e) => {
@@ -45,16 +65,16 @@ export default function Home({ socket, friendships, channels }) {
       }>
         <div className='w-full'>
           {
-            channels  ?
-            channels.map(channel => {
+            friendships.map(friendship => {
               return (
-                <div key={channel.id} className={`${activeChannel && channel.id === activeChannel.id ? "drop-shadow-md text-zinc-50 bg-zinc-700" : "text-zinc-400"} text-ellipsis overflow-hidden m-1 px-1 rounded-xl cursor-pointer`} onClick={() => {setActiveChannel(channel)}}>
-                  <abbr title={channel.name} className="border-b-0 no-underline">{channel.name}</abbr>
+                <div key={friendship.channel.id} className={`${activeChannel && friendship.channel.id === activeChannel.id ? "drop-shadow-md text-zinc-50 bg-zinc-700" : "text-zinc-400"} flex items-center text-left text-ellipsis overflow-hidden m-1 px-1 rounded-xl cursor-pointer`} onClick={() => {setActiveChannel(friendship.channel)}}>
+                  <div className="w-12 h-12 mx-2 shrink-0">
+                    icon
+                  </div>
+                  <abbr title={friendship.channel.name} className="border-b-0 no-underline pb-2.5 pt-1.5">{friendship.channel.name}</abbr>
                 </div>
               )
             })
-            :
-            <></>
           }
         </div>
       </SideBar>

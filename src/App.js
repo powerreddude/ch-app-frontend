@@ -33,7 +33,6 @@ function App() {
   const [loaded, setLoaded] = useState(false);
   const [loadedAuthed, setLoadedAuthed] = useState(false);
   const [needsAuth, setNeedsAuth] = useState(false)
-  const [loadedFriendships, setLoadedFriendships] = useState(false);
   const [loadedServers, setLoadedServers] = useState(false);
   const [socket, setSocket] = useState(null);
   const [channels, setChannels] = useState([])
@@ -45,16 +44,6 @@ function App() {
         setServers(servers);
         setLoadedServers(true);
       }
-    })
-
-    getFriendships().then(friendships => {
-      setFriendships(friendships);
-      friendships.map(async (user) => {
-        const channel = await getChannel({ channelId: user.friendships.channelId });
-        channel.name = user.name;
-        setChannels(channels => !channels.find(channels => channels.id === channel.id) ? [...channels, channel] : channels);
-      })
-      setLoadedFriendships(true);
     })
 
     const socket = io();
@@ -77,22 +66,6 @@ function App() {
       setLoaded(true);
     })
   }, [])
-
-  useEffect( () => {
-    if(socket && user) {
-      socket.on(`user-${user.id}-friendships-channel-create`, (msg) => {
-        const parsed = JSON.parse(msg);
-
-        console.log(parsed)
-
-        setChannels(channels => !channels.find(channels => channels.id === parsed.id) ? [...channels, parsed] : channels);
-      })
-    }
-  }, [socket, user])
-
-  if(!loaded) {
-    return (<Loading/>)
-  }
 
   const onLogin = async (e) => {
     e.preventDefault();
@@ -126,7 +99,7 @@ function App() {
     return true;
   }
 
-  const onCreateNew = async (e) => {
+  const onCreateNew = async (e) => { // convert to socket 
     e.preventDefault();
     const channelName = e.target.channelName.value, name = e.target.name.value;
 
@@ -139,7 +112,7 @@ function App() {
     return server;
   }
 
-  const onJoinServer = async (key) => {
+  const onJoinServer = async (key) => { // convert to socket
     const server = await postJoin({ key });
 
     console.log(server)
@@ -147,6 +120,10 @@ function App() {
     setServers((servers) => [...servers, server])
 
     return server;
+  }
+
+  if(!loaded) {
+    return (<Loading/>)
   }
 
   return (
@@ -179,7 +156,7 @@ function App() {
               
               <Route
                 path='/'
-                element={loadedFriendships ? <Home socket={socket} friendships={friendships} channels={channels} /> : <Loading/>}
+                element={socket ? <Home socket={socket} friendships={friendships} channels={channels} /> : <Loading/>}
                 />
 
               <Route 
