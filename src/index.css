@@ -12,9 +12,12 @@ body {
 }
 
 html, body {
-  background-color: #27272A;
   width: 100vw;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #27272A;
+  flex-grow: 1;
 }
 
 #root {
