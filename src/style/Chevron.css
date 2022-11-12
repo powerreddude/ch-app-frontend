@@ -1,0 +1,46 @@
+.Chevron {
+    width: 40px;
+    height: 40px;
+    padding: 0 26px 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 400ms;
+    z-index: 1;
+}
+
+.Chevron.active {
+    padding: 0 10px 0 0;
+}
+
+.ChevronLine::before,
+.ChevronLine::after {
+    display: block;
+    content: '';
+    position: absolute;
+    width: 19px;
+    height: 3px;
+    transition: all 400ms;
+    background-color: aliceblue;
+
+}
+
+.ChevronLine::before {
+    transform: translateY(-8px);
+    rotate: 45deg;
+}
+
+.ChevronLine::after {
+    transform: translateY(8px);
+    rotate: -45deg;
+}
+
+.ChevronLine.active::before {
+
+    rotate: -45deg;
+}
+
+.ChevronLine.active::after {
+    rotate: 45deg;
+}

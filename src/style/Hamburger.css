@@ -40,10 +40,10 @@
     background: transparent;
 }
 
-.active::after{
+.HamburgerLine.active::after{
     transform: rotate(-45deg) translate(35px, 35px);
 }
 
-.active::before {
+.HamburgerLine.active::before {
     transform: rotate(45deg) translate(35px, -35px);
 }
