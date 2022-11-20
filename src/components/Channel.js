@@ -14,7 +14,6 @@ export default function Channel({ channel, socket }) {
   useEffect(() => {
     getMessages({ channelId: channel.id, limit: 30 }).then(messages => {
       if(messages.length < 30) {setHasMore(false)}
-      console.log(messages)
       setMessages(messages);
     })
 
@@ -64,11 +63,20 @@ export default function Channel({ channel, socket }) {
             loader={<div className="h-16 my-8"><Loading></Loading></div>}
             scrollableTarget={`channel-${channel.id}-scroller`}
             style={{ display: 'flex', flexDirection: 'column-reverse' }}
+            className="pb-2"
           >
             {
               messages.map((message, index, array) => {
+                if(array[index + 1]) {
+                  var userSame = message.userId === array[index + 1].userId;
+                  var sameTimeBlock = Math.floor(Date.parse(message.createdAt) / 30000) === Math.floor(Date.parse(array[index + 1].createdAt) / 30000);
+                } else {
+                  var userSame = false;
+                  var sameTimeBlock = false;
+                }
+
                 return (
-                  <Message key={message.id} message={message}></Message>
+                  <Message key={message.id} title={ !userSame || !sameTimeBlock } message={message}></Message>
                 )
               })
             }

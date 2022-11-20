@@ -1,7 +1,7 @@
 import { useState } from "react"
 import Chevron from "./Chevron";
 
-export default function SideBar({ children, stickyBottom, left }) {
+export default function SideBar({ children, stickyBottom, stickyBottomBar, left }) {
   const [open, setOpen] = useState(false);
   
   return (
@@ -13,7 +13,7 @@ export default function SideBar({ children, stickyBottom, left }) {
         <div className="grow overflow-y-scroll scrollbar-hide">
           {children}
         </div>
-        <div className="flex mb-2 mx-1 h-8">
+        <div className="flex w-full h-10">
           {stickyBottom}
         </div>
       </div>
@@ -21,14 +21,17 @@ export default function SideBar({ children, stickyBottom, left }) {
       <></>
       }
 
-      <div className={`${left ? "float-right" : "float-left"} flex flex-col items-center w-10 h-full bg-zinc-800`}>
-        
-        {(left) ?
-          <Chevron shown={open} onClick={() => {setOpen(!open)}}/>
-          :
-          <Chevron shown={!open} onClick={() => {setOpen(!open)}}/>
-        }
-
+      <div className={`${left ? "float-right" : "float-left"} flex flex-col items-center w-12 h-full bg-zinc-800`}>
+        <div className="grow">
+          {(left) ?
+            <Chevron shown={open} onClick={() => {setOpen(!open)}}/>
+            :
+            <Chevron shown={!open} onClick={() => {setOpen(!open)}}/>
+          }
+        </div>
+        <div className="flex w-full h-10">
+          {stickyBottomBar}
+        </div>
 
       </div>
       {
@@ -37,7 +40,7 @@ export default function SideBar({ children, stickyBottom, left }) {
         <div className="grow overflow-y-scroll scrollbar-hide">
           {children}
         </div>
-        <div className="flex mb-2 mx-1 h-8">
+        <div className="flex w-full h-10">
           {stickyBottom}
         </div>
       </div>

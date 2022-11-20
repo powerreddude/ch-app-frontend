@@ -61,7 +61,7 @@ export default function Server({ server, user, socket }) {
   return (
     <div className="flex h-full w-full">
       <SideBar left stickyBottom={
-        <div className="flex overflow-hidden justify-between w-full items-center rounded-md drop-shadow-xl bg-zinc-700 px-1">
+        <div className="flex mx-1 mb-2 overflow-hidden justify-between w-full items-center rounded-md drop-shadow-xl bg-zinc-700 px-1">
           <abbr title={server.name} className="font-bold border-b-0 no-underline text-ellipsis overflow-hidden">{server.name}</abbr>
           {/* owner controls */}
           {server.ownerId === user.id ? // Check if user is able to edit server aka owner
@@ -97,9 +97,7 @@ export default function Server({ server, user, socket }) {
         })}
       </SideBar>
       <Channel key={activeChannel.id} channel={activeChannel} socket={socket}/>
-      <SideBar>
-        
-      </SideBar>
+
 
       {/* modal for creating channel */}
       <Modal open={openCreateChannel}>

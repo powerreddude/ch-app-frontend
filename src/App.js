@@ -22,9 +22,8 @@ import getServers from './api/servers/getServers';
 import postServer from './api/servers/postServer';
 import JoinServer from './pages/JoinServer';
 import postJoin from './api/servers/postJoin';
-import getFriendships from './api/friendships/getFriendships';
-import getChannel from './api/channels/getChannel';
 import Info from './pages/Info';
+import UserSettings from './pages/UserSettings';
 
 
 function App() {
@@ -35,8 +34,6 @@ function App() {
   const [needsAuth, setNeedsAuth] = useState(false)
   const [loadedServers, setLoadedServers] = useState(false);
   const [socket, setSocket] = useState(null);
-  const [channels, setChannels] = useState([])
-  const [friendships, setFriendships] = useState([]);
 
   const authed = () => {
     getServers().then(servers => {
@@ -70,8 +67,12 @@ function App() {
   const onLogin = async (e) => {
     e.preventDefault();
     const email = e.target.email.value, password = e.target.password.value;
+    let user;
+    try {
+      user = await postLogin({ email, password });
+    } catch {
 
-    const user = await postLogin({ email, password });
+    }
 
     if (!user) {
       return false;
@@ -85,9 +86,14 @@ function App() {
 
   const onSignup = async (e) => {
     e.preventDefault();
-    const email = e.target.email.value, password = e.target.password.value, name = e.target.name.value, key = e.target.key.value;
+    const email = e.target.email.value, password = e.target.password.value, name = e.target.name.value
+    let user;
+    try {
+      user = await postSignup({ email, password, name });
+    }
+    catch {
 
-    const user = await postSignup({ email, password, name, key });
+    }
 
     if (!user) {
       return false;
@@ -156,7 +162,7 @@ function App() {
               
               <Route
                 path='/'
-                element={socket ? <Home socket={socket} friendships={friendships} channels={channels} /> : <Loading/>}
+                element={socket ? <Home socket={socket} /> : <Loading/>}
                 />
 
               <Route 
@@ -172,6 +178,11 @@ function App() {
               <Route
                 path='/s/join/:key'
                 element={<JoinServer onSubmit={onJoinServer}/>}
+                />
+
+              <Route
+                path='/settings'
+                element={<UserSettings/>}
                 />
 
               {
