@@ -4,12 +4,14 @@ import getMembers from "../api/servers/getMembers";
 import Channel from "../components/Channel";
 import SideBar from "../components/SideBar";
 import Loading from "./Loading";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import getInvite from "../api/servers/getInvite";
 import Modal from "../components/Modal";
 import postChannel from "../api/channels/postChannel";
 
-export default function Server({ server, user, socket }) {
+export default function Server({ servers, user, socket, onCall }) {
+  const { serverId } = useParams();
+  const server = servers.find((o) => o.id == serverId);
   const [channels, setChannels] = useState([]);
   const [members, setMembers] = useState([]);
   const [activeChannel, setActiveChannel] = useState(null);
@@ -90,8 +92,15 @@ export default function Server({ server, user, socket }) {
       }>
         {channels.map(channel => {
           return (
-            <div key={channel.id} className={`${channel.id === activeChannel.id ? "drop-shadow-md text-zinc-50 bg-zinc-700" : "text-zinc-400"} text-ellipsis overflow-hidden m-1 px-1 rounded-xl cursor-pointer`} onClick={() => {setActiveChannel(channel)}}>
-              <abbr title={channel.name} className="border-b-0 no-underline">{channel.name}</abbr>
+            <div key={channel.id} className={`${channel.id === activeChannel.id ? "drop-shadow-md text-zinc-50 bg-zinc-700" : "text-zinc-400"} h-12 flex justify-between items-center text-ellipsis overflow-hidden m-1 px-1 rounded-lg cursor-pointer`} onClick={() => {setActiveChannel(channel)}}>
+              <abbr title={channel.name} className="border-b-0 pl-4 no-underline">{channel.name}</abbr>
+              {/*channel.voice*/ true ? 
+              <div className="" onClick={() => {onCall(channel)}}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+              :null}
             </div>
           )
         })}

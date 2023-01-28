@@ -1,0 +1,38 @@
+.HamburgerEx {
+    width: 16px;
+    height: 16px;
+    margin-left: .5rem;
+    margin-right: .5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: inline-block;
+    transform: translateY(px);
+
+    z-index: 1;
+}
+
+.HamburgerExLine {
+    width: 16px;
+    height: 1px;
+    background-color: aliceblue;
+}
+
+.HamburgerExLine::before,
+.HamburgerExLine::after {
+    display: block;
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 1px;
+    transition: all 400ms cubic-bezier(.84,.06,.52,1.8);
+    background-color: aliceblue;
+}
+
+.HamburgerExLine::before {
+    transform: translateY(16px);
+}
+
+.HamburgerExLine::after {
+    transform: translateY(8px);
+}

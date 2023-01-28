@@ -24,6 +24,13 @@ import JoinServer from './pages/JoinServer';
 import postJoin from './api/servers/postJoin';
 import Info from './pages/Info';
 import UserSettings from './pages/UserSettings';
+import Docs from './pages/docs';
+import UsersDocs from './pages/docs/users';
+import ServersDocs from './pages/docs/servers';
+import ChannelsDocs from './pages/docs/channels';
+import MessagesDocs from './pages/docs/messages';
+import FriendshipsDocs from './pages/docs/friendships';
+import Caller from './components/Caller';
 
 
 function App() {
@@ -34,6 +41,7 @@ function App() {
   const [needsAuth, setNeedsAuth] = useState(false)
   const [loadedServers, setLoadedServers] = useState(false);
   const [socket, setSocket] = useState(null);
+  const [callingChannel, setCallingChannel] = useState(null);
 
   const authed = () => {
     getServers().then(servers => {
@@ -111,8 +119,6 @@ function App() {
 
     const server = await postServer({ name, channelName });
 
-    console.log(server);
-
     setServers((servers) => [...servers, server])
 
     return server;
@@ -121,19 +127,26 @@ function App() {
   const onJoinServer = async (key) => { // convert to socket
     const server = await postJoin({ key });
 
-    console.log(server)
-
     setServers((servers) => [...servers, server])
 
     return server;
   }
 
-  if(!loaded) {
+  const onCall = (channel) => {
+    setCallingChannel(channel);
+  }
+
+  if((!loaded || !loadedServers) && !needsAuth) {
     return (<Loading/>)
   }
 
   return (
     <div className="App w-full h-full">
+      {socket ?
+        <Caller channel={callingChannel} socket={socket}/>
+      :null}
+      
+
       <BrowserRouter>
 
         <Routes>
@@ -157,7 +170,36 @@ function App() {
                 path='/info'
                 element={<Info/>}
                 />
+            
+            <Route
+                path='/docs'
+                element={<Docs/>}
+                />
 
+            <Route
+                path='/docs/users'
+                element={<UsersDocs/>}
+                />
+
+            <Route
+                path='/docs/servers'
+                element={<ServersDocs/>}
+                />
+
+            <Route
+                path='/docs/channels'
+                element={<ChannelsDocs/>}
+                />
+
+            <Route
+                path='/docs/messages'
+                element={<MessagesDocs/>}
+                />
+
+            <Route
+                path='/docs/friendships'
+                element={<FriendshipsDocs/>}
+                />
             <Route element={<ProtectedRoute authed={loadedAuthed} redirectPath='/info'/>}>
               
               <Route
@@ -182,20 +224,14 @@ function App() {
 
               <Route
                 path='/settings'
-                element={<UserSettings/>}
+                element={<UserSettings user={user}/>}
                 />
 
-              {
-                servers.map((server) => {
-                  return (
-                    <Route 
-                      key={server.id}
-                      path={`/s/${server.id}`}
-                      element={<Server server={server} user={user} socket={socket}/>}
-                      />
-                  )
-                })
-              }
+              <Route 
+                path={`/s/:serverId`}
+                element={<Server servers={servers} user={user} socket={socket} onCall={onCall}/>}
+                />
+              
 
             </Route>
 

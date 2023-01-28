@@ -25,6 +25,7 @@ export default function Nav({ user }) {
             <div className="hidden md:flex space-x-4 items-center">
               <Link className='pt-1.5 pb-2.5 hover:text-zinc-300' to='/'>Home</Link>
               <Link className='pt-1.5 pb-2.5 hover:text-zinc-300' to='/s'>Servers</Link>
+              <Link className='pt-1.5 pb-2.5 hover:text-zinc-300' to='/docs'>Docs</Link>
             </div>
           </div>
 
@@ -50,6 +51,7 @@ export default function Nav({ user }) {
       <div className={`absolute z-10 w-full bg-zinc-900 transition-all md:hidden overflow-hidden flex flex-col justify-between ${showMobile ? ' max-h-64' : 'max-h-0'}`}>
         <Link className="block py-2 border-t border-zinc-800 grow" to="/">Home</Link>
         <Link className="block py-2 border-t border-zinc-800 grow" to="/s">Servers</Link>
+        <Link className='block py-2 border-t border-zinc-800 grow' to='/docs'>Docs</Link>
         {!user ?
         <>
         <Link className='m-1 px-2 pt-1.5 pb-2.5 border-2 border-violet-800 hover:border-violet-900 rounded-md' to='/login'>Login</Link>

@@ -26,7 +26,7 @@ export default function Servers({ servers }) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
             </div>
-            <span className="relative bottom-4 text-zinc-50 px-1 shadow-xl bg-zinc-800 rounded-md">
+            <span className="relative bottom-4 text-zinc-50 px-1 shadow-xl bg-zinc-800 rounded-md overflow-hidden text-ellipsis max-w-36 border-b-0 no-underline block whitespace-nowrap">
               Create New
             </span>
           </div>
