@@ -9,6 +9,10 @@ export default function Caller({ channel, socket }) {
     socket.emit("voice-start-call", channelId);
   }
 
+  function endCall() {
+    socket.emit("voice-end-call");
+  }
+
   useEffect(() => {
     
     // Event called when someone joins the channel
@@ -25,7 +29,8 @@ export default function Caller({ channel, socket }) {
           var sound      = document.createElement('audio');
           sound.controls = 'controls';
           sound.srcObject      = e.streams[0];
-          document.getElementById("root").appendChild(sound);
+          sound.hidden = true;
+          document.getElementById("root").appendChild(sound).play();
         }
 
         connection.onicecandidate = e => console.log(connection.localDescription)
@@ -52,7 +57,8 @@ export default function Caller({ channel, socket }) {
           var sound      = document.createElement('audio');
           sound.controls = 'controls';
           sound.srcObject      = e.streams[0];
-          document.getElementById("root").appendChild(sound);
+          sound.hidden = true;
+          document.getElementById("root").appendChild(sound).play();
         }
 
         connection.setRemoteDescription(new RTCSessionDescription(offer));
@@ -91,6 +97,7 @@ export default function Caller({ channel, socket }) {
             connection.connection.close();
           })
           peerConnections.current = [];
+          endCall();
         }
   
         //start-call
