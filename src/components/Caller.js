@@ -6,7 +6,7 @@ export default function Caller({ channel, socket }) {
   const stream = useRef();
 
   function startCall(channelId) {
-
+    socket.emit("voice-start-call", channelId);
   }
 
   useEffect(() => {
@@ -94,9 +94,7 @@ export default function Caller({ channel, socket }) {
         }
   
         //start-call
-        console.log("start-call");
-        console.log(peerConnections.current)
-        socket.emit("voice-start-call", channel.id);
+        startCall(channel.id)
       }
   
       previousChannel.current = channel
