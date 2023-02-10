@@ -19,7 +19,21 @@ export default function Caller({ channel, socket }) {
     socket.on("voice-join", async (toId) => {
       if (!peerConnections.current.find((o) => o.userId === toId)) {
         console.log("join")
-        const connection = new RTCPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
+        const connection = new RTCPeerConnection({'iceServers': [
+        {
+          urls: 'stun:74.125.142.127:19302'
+        },
+        {
+          url: 'turn:192.158.29.39:3478?transport=udp',
+          credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+          username: '28224511:1379330808'
+      },
+      {
+          url: 'turn:192.158.29.39:3478?transport=tcp',
+          credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+          username: '28224511:1379330808'
+      }
+    ]});
 
         stream.current.getTracks().forEach(track => {
           connection.addTrack(track, stream.current)
@@ -47,8 +61,21 @@ export default function Caller({ channel, socket }) {
       if (!peerConnections.current.find((o => o.userId === toId))) {
         console.log(offer)
         
-        const connection = new RTCPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
-
+        const connection = new RTCPeerConnection({'iceServers': [
+          {
+            urls: 'stun:74.125.142.127:19302'
+          },
+          {
+            url: 'turn:192.158.29.39:3478?transport=udp',
+            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+            username: '28224511:1379330808'
+        },
+        {
+            url: 'turn:192.158.29.39:3478?transport=tcp',
+            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+            username: '28224511:1379330808'
+        }
+      ]});
 
         stream.current.getTracks().forEach(track => {
           connection.addTrack(track, stream.current)
