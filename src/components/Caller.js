@@ -19,7 +19,7 @@ export default function Caller({ channel, socket }) {
     socket.on("voice-join", async (toId) => {
       if (!peerConnections.current.find((o) => o.userId === toId)) {
         console.log("join")
-        const connection = new RTCPeerConnection();
+        const connection = new RTCPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
         stream.current.getTracks().forEach(track => {
           connection.addTrack(track, stream.current)
@@ -47,7 +47,7 @@ export default function Caller({ channel, socket }) {
       if (!peerConnections.current.find((o => o.userId === toId))) {
         console.log(offer)
         
-        const connection = new RTCPeerConnection();
+        const connection = new RTCPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
 
         stream.current.getTracks().forEach(track => {
