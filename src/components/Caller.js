@@ -26,7 +26,7 @@ export default function Caller({ channel, socket }) {
           {
             urls: 'turn:openrelay.metered.ca:80',
             username: 'openrelayproject',
-            credentials: 'openrelayproject'
+            credential: 'openrelayproject'
           }
         ]});
 
@@ -63,7 +63,7 @@ export default function Caller({ channel, socket }) {
           {
             urls: 'turn:openrelay.metered.ca:80',
             username: 'openrelayproject',
-            credentials: 'openrelayproject'
+            credential: 'openrelayproject'
           }
         ]});
 
