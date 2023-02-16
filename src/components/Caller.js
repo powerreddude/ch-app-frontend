@@ -20,20 +20,15 @@ export default function Caller({ channel, socket }) {
       if (!peerConnections.current.find((o) => o.userId === toId)) {
         console.log("join")
         const connection = new RTCPeerConnection({'iceServers': [
-        {
-          urls: 'stun:74.125.142.127:19302'
-        },
-        {
-          url: 'turn:192.158.29.39:3478?transport=udp',
-          credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-          username: '28224511:1379330808'
-      },
-      {
-          url: 'turn:192.158.29.39:3478?transport=tcp',
-          credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-          username: '28224511:1379330808'
-      }
-    ]});
+          {
+            urls: 'stun:74.125.142.127:19302'
+          },
+          {
+            urls: 'turn:openrelay.metered.ca:80',
+            username: 'openrelayproject',
+            credentials: 'openrelayproject'
+          }
+        ]});
 
         stream.current.getTracks().forEach(track => {
           connection.addTrack(track, stream.current)
@@ -66,16 +61,11 @@ export default function Caller({ channel, socket }) {
             urls: 'stun:74.125.142.127:19302'
           },
           {
-            url: 'turn:192.158.29.39:3478?transport=udp',
-            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-            username: '28224511:1379330808'
-        },
-        {
-            url: 'turn:192.158.29.39:3478?transport=tcp',
-            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-            username: '28224511:1379330808'
-        }
-      ]});
+            urls: 'turn:openrelay.metered.ca:80',
+            username: 'openrelayproject',
+            credentials: 'openrelayproject'
+          }
+        ]});
 
         stream.current.getTracks().forEach(track => {
           connection.addTrack(track, stream.current)
