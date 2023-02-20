@@ -47,7 +47,8 @@ export default function Caller({ channel, socket }) {
         
         peerConnections.current.push({ userId: toId, connection: connection });
 
-        setTimeout(() => { socket.emit("voice-offer", toId, connection.localDescription); console.log("sent offer"); }, 1000)
+        socket.emit("voice-offer", toId, connection.localDescription);
+        console.log("sent offer");
       }
     });
 
@@ -84,7 +85,8 @@ export default function Caller({ channel, socket }) {
 
         connection.createAnswer().then((a) => { connection.setLocalDescription(a); });
         
-        setTimeout(() => { socket.emit("voice-answer", toId, connection.localDescription); console.log("sent answer"); }, 1000)
+        socket.emit("voice-answer", toId, connection.localDescription);
+        console.log("sent answer");
       }
     });
 
