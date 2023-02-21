@@ -42,12 +42,16 @@ export default function Caller({ channel, socket }) {
           document.getElementById("root").appendChild(sound).play();
         }
 
-        connection.onicecandidate = e => console.log(connection.localDescription)
+        connection.onicecandidate = e => {
+          console.log(e.candidate)
+          if(e.candidate === null) {
+            socket.emit("voice-offer", toId, connection.localDescription);
+          }
+        }
         connection.createOffer().then((o) => {connection.setLocalDescription(o)});
         
         peerConnections.current.push({ userId: toId, connection: connection });
 
-        setTimeout(() => { socket.emit("voice-offer", toId, connection.localDescription); console.log("sent offer"); }, 1000)
       }
     });
 
@@ -80,11 +84,16 @@ export default function Caller({ channel, socket }) {
 
         connection.setRemoteDescription(new RTCSessionDescription(offer));
 
+        connection.onicecandidate = e => {
+          console.log(e.candidate)
+          if(e.candidate === null) {
+            socket.emit("voice-answer", toId, connection.localDescription);
+          }
+        }
+
         peerConnections.current.push({ userId: toId, connection: connection });
 
         connection.createAnswer().then((a) => { connection.setLocalDescription(a); });
-        
-        setTimeout(() => { socket.emit("voice-answer", toId, connection.localDescription); console.log("sent answer"); }, 1000)
       }
     });
 
