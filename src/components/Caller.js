@@ -43,13 +43,11 @@ export default function Caller({ channel, socket }) {
         }
 
         connection.onicecandidate = e => console.log(connection.localDescription)
-        connection.createOffer().then((o) => {
-          connection.setLocalDescription(o)
+        connection.createOffer().then((o) => {connection.setLocalDescription(o)});
+        
+        peerConnections.current.push({ userId: toId, connection: connection });
 
-          peerConnections.current.push({ userId: toId, connection: connection });
-
-          socket.emit("voice-offer", toId, connection.localDescription);
-        });
+        setTimeout(() => { socket.emit("voice-offer", toId, connection.localDescription); console.log("sent offer"); }, 1000)
       }
     });
 
@@ -84,11 +82,9 @@ export default function Caller({ channel, socket }) {
 
         peerConnections.current.push({ userId: toId, connection: connection });
 
-        connection.createAnswer().then((a) => {
-          connection.setLocalDescription(a);
+        connection.createAnswer().then((a) => { connection.setLocalDescription(a); });
         
-          socket.emit("voice-answer", toId, connection.localDescription);
-        });
+        setTimeout(() => { socket.emit("voice-answer", toId, connection.localDescription); console.log("sent answer"); }, 1000)
       }
     });
 
