@@ -43,12 +43,18 @@ export default function Caller({ channel, socket }) {
         }
 
         connection.onicecandidate = e => console.log(connection.localDescription)
+
+        connection.oniceconnectionstatechange = (e) => {
+          if(connection.iceGatheringState === 'complete') {
+            socket.emit("voice-offer", toId, connection.localDescription);
+          }
+        }
+        
         connection.createOffer().then(async (o) => {
           await connection.setLocalDescription(o)
 
           peerConnections.current.push({ userId: toId, connection: connection });
 
-          socket.emit("voice-offer", toId, connection.localDescription);
         });
       }
     });
@@ -84,10 +90,14 @@ export default function Caller({ channel, socket }) {
 
         peerConnections.current.push({ userId: toId, connection: connection });
 
+        connection.oniceconnectionstatechange = (e) => {
+          if(connection.iceGatheringState === 'complete') {
+            socket.emit("voice-answer", toId, connection.localDescription);
+          }
+        }
+
         connection.createAnswer().then(async (a) => {
           await connection.setLocalDescription(a);
-        
-          socket.emit("voice-answer", toId, connection.localDescription);
         });
       }
     });
