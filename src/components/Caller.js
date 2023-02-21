@@ -41,7 +41,9 @@ export default function Caller({ channel, socket }) {
           sound.hidden = true;
           document.getElementById("root").appendChild(sound).play();
         }
-
+        connection.oniceconnectionstatechange((e) => {
+          console.log(e);
+        })
         connection.onicecandidate = e => console.log(connection.localDescription)
         await connection.setLocalDescription();
         
@@ -81,10 +83,12 @@ export default function Caller({ channel, socket }) {
         connection.setRemoteDescription(new RTCSessionDescription(offer));
 
         peerConnections.current.push({ userId: toId, connection: connection });
-
+        connection.oniceconnectionstatechange((e) => {
+          console.log(e);
+        })
         await connection.setLocalDescription();
         
-        setTimeout(() => { socket.emit("voice-answer", toId, connection.localDescription); console.log("sent answer"); }, 1000)
+        socket.emit("voice-answer", toId, connection.localDescription);
       }
     });
 
