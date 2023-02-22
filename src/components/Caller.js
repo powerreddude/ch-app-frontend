@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Caller({ channel, socket }) {
-  const [peerConnections, setPeerConnections] = useState([]);
+  const peerConnections = useRef([]);
   const previousChannel = useRef();
   const stream = useRef();
 
@@ -17,7 +17,7 @@ export default function Caller({ channel, socket }) {
     
     // Event called when someone joins the channel
     socket.on("voice-join", async (toId) => {
-      if (!peerConnections.find((o) => o.userId === toId)) {
+      if (!peerConnections.current.find((o) => o.userId === toId)) {
         console.log("join")
         const connection = new RTCPeerConnection({'iceServers': [
           {
@@ -48,16 +48,16 @@ export default function Caller({ channel, socket }) {
             socket.emit("voice-offer", toId, connection.localDescription);
           }
         }
-
         connection.createOffer().then((o) => {connection.setLocalDescription(o)});
         
-        setPeerConnections((peerConnections) => {return [...peerConnections, { userId: toId, connection: connection }]});
+        peerConnections.current.push({ userId: toId, connection: connection });
+
       }
     });
 
     //Event called after another client has ack that I joined
     socket.on("voice-offer", async (toId, offer) => {
-      if (!peerConnections.find((o => o.userId === toId))) {
+      if (!peerConnections.current.find((o => o.userId === toId))) {
         console.log(offer)
         
         const connection = new RTCPeerConnection({'iceServers': [
@@ -91,16 +91,16 @@ export default function Caller({ channel, socket }) {
           }
         }
 
-        connection.createAnswer().then((a) => { connection.setLocalDescription(a); });
+        peerConnections.current.push({ userId: toId, connection: connection });
 
-        setPeerConnections((peerConnections) => {return [...peerConnections, { userId: toId, connection: connection }]});
+        connection.createAnswer().then((a) => { connection.setLocalDescription(a); });
       }
     });
 
     socket.on("voice-answer", (toId, answer) => {
       console.log("in answer")
-      if (!peerConnections.find((o) => o.userId === toId && o.fin)) {
-        const connection = peerConnections.find((o) => o.userId === toId);
+      if (!peerConnections.current.find((o) => o.userId === toId && o.fin)) {
+        const connection = peerConnections.current.find((o) => o.userId === toId);
         connection.connection.setRemoteDescription(new RTCSessionDescription(answer));
         connection.fin = true
       }
@@ -119,10 +119,10 @@ export default function Caller({ channel, socket }) {
         if (previousChannel.current) {
           // leave-call
           // TODO add more to remove unused audio elements 
-          peerConnections.forEach((connection) => {
+          peerConnections.current.forEach((connection) => {
             connection.connection.close();
           })
-          setPeerConnections([]);
+          peerConnections.current = [];
           endCall();
         }
   
