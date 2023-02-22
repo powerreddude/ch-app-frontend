@@ -1,11 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Caller({ channel, socket }) {
   const peerConnections = useRef([]);
-  const [peerConnectionsState, setPeerConnectionsState] = useState([]);
   const previousChannel = useRef();
   const stream = useRef();
-  const [openAudio, setOpenAudio] = useState();
 
   function startCall(channelId) {
     socket.emit("voice-start-call", channelId);
@@ -48,7 +46,6 @@ export default function Caller({ channel, socket }) {
         connection.createOffer().then((o) => {connection.setLocalDescription(o)});
         
         peerConnections.current.push({ userId: toId, connection: connection });
-        setPeerConnectionsState(peerConnections.current.map((o) => o.userId));
 
         setTimeout(() => { socket.emit("voice-offer", toId, connection.localDescription); console.log("sent offer"); }, 1000)
       }
@@ -84,14 +81,9 @@ export default function Caller({ channel, socket }) {
         connection.setRemoteDescription(new RTCSessionDescription(offer));
 
         peerConnections.current.push({ userId: toId, connection: connection });
-        setPeerConnectionsState(peerConnections.current.map((o) => o.userId));
 
-
-        connection.onicecandidate = e => console.log(connection.localDescription)
         connection.createAnswer().then((a) => { connection.setLocalDescription(a); });
         
-        peerConnections.current.push({ userId: toId, connection: connection });
-
         setTimeout(() => { socket.emit("voice-answer", toId, connection.localDescription); console.log("sent answer"); }, 1000)
       }
     });
@@ -122,7 +114,6 @@ export default function Caller({ channel, socket }) {
             connection.connection.close();
           })
           peerConnections.current = [];
-          setPeerConnectionsState(peerConnections.current.map((o) => o.userId));
           endCall();
         }
   
@@ -136,20 +127,4 @@ export default function Caller({ channel, socket }) {
     run()
 
   }, [channel])
-
-  return (
-    <div className="">
-      <div className={`absolute w-full bottom-0 bg-black transition-all opacity-95 rounded-t-2xl text-zinc-50 flex items-center px-2 overflow-hidden ${openAudio ? "h-12" : "h-0"}`}>
-      {channel ? 
-        <>
-        {channel.name}
-        {peerConnectionsState}
-        </>
-      :null}
-      </div>
-      <div className={`absolute bottom-0 right-0 bg-zinc-800 hover:w-12 hover:h-12 transition-all rounded-tl-full ${openAudio ? "w-12 h-12" : "w-8 h-8"}`} onClick={ () => {setOpenAudio(prev => !prev)} }>
-      
-      </div>
-    </div>
-  )
 }
