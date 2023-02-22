@@ -142,10 +142,6 @@ function App() {
 
   return (
     <div className="App w-full h-full">
-      {socket ?
-        <Caller channel={callingChannel} socket={socket}/>
-      :null}
-      
 
       <BrowserRouter>
 
@@ -242,7 +238,11 @@ function App() {
         </Routes>
 
       </BrowserRouter>
-
+      
+      {socket ?
+        <Caller channel={callingChannel} socket={socket}/>
+      :null}
+      
     </div>
   );
 }
