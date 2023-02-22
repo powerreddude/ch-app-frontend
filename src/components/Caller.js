@@ -44,19 +44,13 @@ export default function Caller({ channel, socket }) {
           document.getElementById("root").appendChild(sound).play();
         }
 
+        connection.onicecandidate = e => console.log(connection.localDescription)
+        connection.createOffer().then((o) => {connection.setLocalDescription(o)});
+        
         peerConnections.current.push({ userId: toId, connection: connection });
         setPeerConnectionsState(peerConnections.current.map((o) => o.userId));
 
-        // connection.onicecandidate = e => {
-        //   console.log(e.candidate)
-        //   if(e.candidate === null) {
-        //     socket.emit("voice-offer", toId, connection.localDescription);
-        //   }
-        // }
-
-        connection.createOffer().then((o) => {connection.setLocalDescription(o)});
-        
-        setTimeout(() => {socket.emit("voice-offer", toId, connection.localDescription);}, 1000);
+        setTimeout(() => { socket.emit("voice-offer", toId, connection.localDescription); console.log("sent offer"); }, 1000)
       }
     });
 
@@ -93,17 +87,12 @@ export default function Caller({ channel, socket }) {
         setPeerConnectionsState(peerConnections.current.map((o) => o.userId));
 
 
-        // connection.onicecandidate = e => {
-        //   console.log(e.candidate)
-        //   if(e.candidate === null) {
-        //     socket.emit("voice-answer", toId, connection.localDescription);
-        //   }
-        // }
-
-
+        connection.onicecandidate = e => console.log(connection.localDescription)
         connection.createAnswer().then((a) => { connection.setLocalDescription(a); });
         
-        setTimeout(() => {socket.emit("voice-answer", toId, connection.localDescription);}, 1000);
+        peerConnections.current.push({ userId: toId, connection: connection });
+
+        setTimeout(() => { socket.emit("voice-answer", toId, connection.localDescription); console.log("sent answer"); }, 1000)
       }
     });
 
